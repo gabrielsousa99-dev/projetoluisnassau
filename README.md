@@ -27,6 +27,4 @@ Prototipo de aplicação web de produtividade voltada para organização diária
 
 Oraganização de estudos e gerenciamento de tarefas, com produtividade com base em gamificaçao/ bonificaçao
 
-## Como executar
-
-Passos para abrir o projeto.
+## Como executar ( escrever por último)
