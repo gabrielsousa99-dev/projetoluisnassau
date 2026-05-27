@@ -2,7 +2,7 @@
 Prototipo de aplicação web de produtividade voltada para organização diária e gerenciamento de estudos.
 
 
-## Funcionalidades (O que ele deve fazer **agora**)
+## Funcionalidades (O que ele deve fazer *agora*)
 
 - Permitir criar e marcar tarefas diárias
 - Sistema de metas para acompanhamento
@@ -21,7 +21,7 @@ Prototipo de aplicação web de produtividade voltada para organização diária
 ## Ambiente e ferramentas
 - Node.js
 - Vite
-- pnpm
+- npm
 
 ## Objetivo
 
