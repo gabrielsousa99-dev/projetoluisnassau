@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap w/ Vite</title>
+    <link rel="stylesheet" href="./scss/index.css">
+    <script type="module" src="./js/main.js"></script>
+  </head>
+  <body>
+ <form> 
+     <div>
+            <label>Email:</label>
+            <input type="email" name="email" onchange="validateFields()" placeholder="seu@email.com"/>
+        </div>
+        
+        <div>
+            <lavel>Senha:</lavel>
+            <input type="senha" name="senha" id="password" onchange="validateFields()" placeholder="Senha"/>
+        </div>
+        
+        <div>
+            <button type="button" class="clear" id="recover-password-button">Esqueci a senha</button> 
+        </div>
+
+        <div>
+            <button type="button" class="solid" id="login-button" onclick="window.location.href='dashboard.html'">Entrar</button>
+        </div>
+
+        <div>
+            <button type="button" class="outline">Registrar</button>
+        </div>
+</form>
+
+  </body>
+</html>
