@@ -1,8 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
+:root{
+    --body-gradient-start: #ff5e88;
+    --body-gradient-end: #ff8cab;
+
+    --calendar-bg: #ffffff;
+
+    --text-primary: #000000;
+
+    --inactive-color: #cccccc;
+
+    --today-bg: #000000;
+}
+
+body.dark-mode{
+    --body-gradient-start: #121212;
+    --body-gradient-end: #1e1e1e;
+
+    --calendar-bg: #2d2d2d;
+
+    --text-primary: #ffffff;
+
+    --inactive-color: #888888;
+
+    --today-bg: #ff5e88;
+}
+
 *{
-    padding: 0;
     margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -14,22 +40,38 @@ body{
 
     background: linear-gradient(
         to bottom,
-        #ff5e88,
-        #ff8cab
+        var(--body-gradient-start),
+        var(--body-gradient-end)
     );
+
+    transition: .3s;
 }
 
 h1{
     text-align: center;
-    color: #fff;
-    font-weight: 600;
-
-    margin-bottom: 2rem;
+    color: white;
+    margin-bottom: 1rem;
 }
 
-h3{
-    font-weight: 600;
-    text-transform: capitalize;
+#theme-toggle{
+    display: block;
+
+    margin: 0 auto 20px;
+
+    padding: 10px 15px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 1rem;
+}
+
+body.dark-mode #theme-toggle{
+    background: #444;
+    color: white;
 }
 
 .calendar{
@@ -38,12 +80,15 @@ h3{
     margin: auto;
     padding: 1rem;
 
-    background: #fff;
+    background: var(--calendar-bg);
+
+    color: var(--text-primary);
 
     border-radius: 10px;
 
-    box-shadow:
-        0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+
+    transition: .3s;
 }
 
 .calendar header{
@@ -52,6 +97,10 @@ h3{
     justify-content: space-between;
 
     margin-bottom: 1rem;
+}
+
+h3{
+    text-transform: capitalize;
 }
 
 .calendar ul{
@@ -69,7 +118,6 @@ h3{
     margin-top: 25px;
 
     position: relative;
-    z-index: 2;
 
     text-align: center;
 }
@@ -80,12 +128,11 @@ h3{
 
 .days li{
     margin-top: 10px;
-    font-size: 0.95rem;
 }
 
 .dates li{
     cursor: pointer;
-    transition: 0.2s;
+    transition: .2s;
 }
 
 .dates li:hover:not(.inactive){
@@ -93,7 +140,7 @@ h3{
 }
 
 .dates li.today{
-    color: #fff;
+    color: white;
 }
 
 .dates li.today::before{
@@ -109,7 +156,7 @@ h3{
 
     transform: translate(-50%, -50%);
 
-    background: #000;
+    background: var(--today-bg);
 
     border-radius: 50%;
 
@@ -117,7 +164,7 @@ h3{
 }
 
 .dates li.inactive{
-    color: #ccc;
+    color: var(--inactive-color);
 }
 
 #prev,
@@ -125,10 +172,10 @@ h3{
     width: 24px;
     height: 24px;
 
-    position: relative;
-
     border: none;
     background: transparent;
+
+    position: relative;
 
     cursor: pointer;
 }
@@ -146,7 +193,7 @@ h3{
     left: 50%;
 
     border-style: solid;
-    border-width: 0.2em 0.25em 0 0;
+    border-width: .2em .25em 0 0;
 
     border-color: #999;
 }
@@ -161,5 +208,5 @@ h3{
 
 #prev:hover::before,
 #next:hover::before{
-    border-color: #000;
+    border-color: black;
 }

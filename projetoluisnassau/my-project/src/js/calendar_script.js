@@ -2,6 +2,7 @@ const header = document.querySelector('.calendar h3');
 const dates = document.querySelector('.dates');
 const navs = document.querySelectorAll('#prev, #next');
 const daysContainer = document.querySelector('.days');
+const themeBtn = document.querySelector('#theme-toggle');
 
 const today = new Date();
 
@@ -13,7 +14,6 @@ function renderWeekDays() {
 
     const weekdays = [];
 
-    // Domingo 05/01/2025
     const firstSunday = new Date(2025, 0, 5);
 
     for (let i = 0; i < 7; i++) {
@@ -61,8 +61,6 @@ function renderCalendar() {
 
     let datesHtml = '';
 
-    // Dias do mês anterior
-
     for (let i = start; i > 0; i--) {
 
         datesHtml += `
@@ -71,8 +69,6 @@ function renderCalendar() {
             </li>
         `;
     }
-
-    // Dias do mês atual
 
     for (let i = 1; i <= endDate; i++) {
 
@@ -89,8 +85,6 @@ function renderCalendar() {
             </li>
         `;
     }
-
-    // Dias do próximo mês
 
     for (let i = end; i < 6; i++) {
 
@@ -140,6 +134,35 @@ navs.forEach(nav => {
         renderCalendar();
     });
 
+});
+
+// Modo noturno
+
+const savedTheme = localStorage.getItem('theme');
+
+if (savedTheme === 'dark') {
+
+    document.body.classList.add('dark-mode');
+
+    themeBtn.textContent = '☀️';
+}
+
+themeBtn.addEventListener('click', () => {
+
+    document.body.classList.toggle('dark-mode');
+
+    const isDark =
+        document.body.classList.contains(
+            'dark-mode'
+        );
+
+    themeBtn.textContent =
+        isDark ? '☀️' : '🌙';
+
+    localStorage.setItem(
+        'theme',
+        isDark ? 'dark' : 'light'
+    );
 });
 
 renderWeekDays();
