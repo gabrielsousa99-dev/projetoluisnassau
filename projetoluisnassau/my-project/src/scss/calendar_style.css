@@ -1,200 +1,254 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
+/* ===== CORES DO PROJETO ===== */
 :root{
     --body-gradient-start: #ff5e88;
     --body-gradient-end: #ff8cab;
-
     --calendar-bg: #ffffff;
-
     --text-primary: #000000;
-
     --inactive-color: #cccccc;
-
     --today-bg: #000000;
+    --today-text: #ffffff;
+    --sidebar-bg: rgba(0, 0, 0, 0.2);
+    --card-shadow: 0 0 10px rgba(0,0,0,.2);
+    --item-bg: rgba(0,0,0,.04);
 }
 
+/* ===== MODO ESCURO ===== */
 body.dark-mode{
     --body-gradient-start: #121212;
     --body-gradient-end: #1e1e1e;
-
     --calendar-bg: #2d2d2d;
-
     --text-primary: #ffffff;
-
     --inactive-color: #888888;
-
     --today-bg: #ff5e88;
+    --today-text: #ffffff;
+    --sidebar-bg: rgba(255, 255, 255, 0.08);
+    --card-shadow: 0 0 10px rgba(0,0,0,.35);
+    --item-bg: rgba(255,255,255,.06);
 }
 
+/* Reset básico */
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Página toda */
 body{
-    padding: 2rem;
     min-height: 100vh;
-
     font-family: 'Poppins', sans-serif;
-
     background: linear-gradient(
         to bottom,
         var(--body-gradient-start),
         var(--body-gradient-end)
     );
-
     transition: .3s;
+    color: var(--text-primary);
 }
 
+/* Layout principal */
+.app-layout{
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Menu lateral */
+.sidebar{
+    width: 240px;
+    padding: 20px;
+    background: var(--sidebar-bg);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar h2{
+    margin-bottom: 10px;
+}
+
+/* Botões do menu */
+.nav-btn{
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: white;
+    color: #000;
+    text-align: left;
+    font-weight: 600;
+}
+
+.nav-btn.active{
+    background: #ff5e88;
+    color: white;
+}
+
+/* Botão do tema */
+.theme-btn{
+    margin-top: auto;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #ffffff;
+    color: #000;
+    font-weight: 600;
+}
+
+/* Área de conteúdo */
+.content{
+    flex: 1;
+    padding: 2rem;
+}
+
+/* Páginas */
+.page{
+    display: none;
+}
+
+.page.active{
+    display: block;
+}
+
+/* título principal */
 h1{
     text-align: center;
     color: white;
     margin-bottom: 1rem;
 }
 
-#theme-toggle{
-    display: block;
-
-    margin: 0 auto 20px;
-
-    padding: 10px 15px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-
-    font-size: 1rem;
-}
-
-body.dark-mode #theme-toggle{
-    background: #444;
-    color: white;
-}
-
+/* estilo do calendário */
 .calendar{
-    width: 380px;
-
+    width: min(100%, 900px);
     margin: auto;
-    padding: 1rem;
-
+    padding: 1.5rem;
     background: var(--calendar-bg);
-
     color: var(--text-primary);
-
-    border-radius: 10px;
-
-    box-shadow: 0 0 10px rgba(0,0,0,.2);
-
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
     transition: .3s;
 }
 
+/* topo do calendário */
 .calendar header{
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     margin-bottom: 1rem;
 }
 
+/* nome do mês */
 h3{
     text-transform: capitalize;
 }
 
+/* lista dos dias */
 .calendar ul{
     list-style: none;
-
     display: flex;
     flex-wrap: wrap;
-
     text-align: center;
 }
 
+/* cada dia ocupa 1/7 da linha */
 .calendar ul li{
     width: calc(100% / 7);
-
-    margin-top: 25px;
-
+    margin-top: 18px;
     position: relative;
-
     text-align: center;
 }
 
+/* dias da semana */
 .days{
     font-weight: 600;
 }
 
-.days li{
-    margin-top: 10px;
-}
-
+/* hover nos dias */
 .dates li{
     cursor: pointer;
     transition: .2s;
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 0;
 }
 
 .dates li:hover:not(.inactive){
     color: #ff5e88;
 }
 
+/* dia atual */
 .dates li.today{
-    color: white;
+    color: var(--today-text);
+    font-weight: 600;
 }
 
+/* dia selecionado */
+.dates li.selected:not(.today){
+    color: #ff5e88;
+    font-weight: 600;
+}
+
+/* círculo do dia atual */
 .dates li.today::before{
     content: '';
-
-    width: 2rem;
-    height: 2rem;
-
+    width: 2.35rem;
+    height: 2.35rem;
     position: absolute;
-
     top: 50%;
     left: 50%;
-
     transform: translate(-50%, -50%);
-
     background: var(--today-bg);
-
     border-radius: 50%;
-
     z-index: -1;
 }
 
-.dates li.inactive{
-    color: var(--inactive-color);
+/* número do dia por cima do círculo */
+.dates li.today .day-number{
+    position: relative;
+    z-index: 1;
 }
 
+/* dias fora do mês */
+.dates li.inactive{
+    color: var(--inactive-color);
+    cursor: default;
+}
+
+/* indicador de tarefas no dia */
+.task-count{
+    display: block;
+    font-size: .7rem;
+    margin-top: 4px;
+    line-height: 1;
+}
+
+/* setas */
 #prev,
 #next{
-    width: 24px;
-    height: 24px;
-
+    width: 32px;
+    height: 32px;
     border: none;
     background: transparent;
-
     position: relative;
-
     cursor: pointer;
 }
 
 #prev::before,
 #next::before{
     content: '';
-
     width: 50%;
     height: 50%;
-
     position: absolute;
-
     top: 50%;
     left: 50%;
-
     border-style: solid;
     border-width: .2em .25em 0 0;
-
     border-color: #999;
 }
 
@@ -209,4 +263,112 @@ h3{
 #prev:hover::before,
 #next:hover::before{
     border-color: black;
+}
+
+/* ===== CHECKLIST ===== */
+.checklist-section{
+    width: min(100%, 1100px);
+    margin: 0 auto;
+    padding: 1rem;
+    background: var(--calendar-bg);
+    color: var(--text-primary);
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+}
+
+.checklist-section h2,
+.checklist-section h3{
+    color: var(--text-primary);
+}
+
+.checklist-columns{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* listas */
+.checklist-list,
+.selected-day-list{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin-top: 1rem;
+    padding-left: 0;
+}
+
+/* item da lista */
+.checklist-item,
+.selected-task,
+.empty-state{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem;
+    border-radius: 8px;
+    background: var(--item-bg);
+}
+
+/* item completo */
+.checklist-item{
+    flex-direction: row;
+}
+
+.checklist-item.done .task-text{
+    text-decoration: line-through;
+    opacity: .6;
+}
+
+.checklist-item-left{
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+/* botão de deletar */
+.delete-task{
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: inherit;
+}
+
+/* formulário removido da tela, mas mantive visual limpo */
+.task-meta{
+    font-size: .85rem;
+    color: var(--inactive-color);
+}
+
+/* texto de ajuda */
+.hint{
+    margin-top: 1rem;
+    font-size: .95rem;
+    color: var(--inactive-color);
+}
+
+/* responsivo */
+@media (max-width: 768px){
+    .app-layout{
+        flex-direction: column;
+    }
+
+    .sidebar{
+        width: 100%;
+    }
+
+    .content{
+        padding: 1rem;
+    }
+
+    .calendar{
+        width: 100%;
+    }
+
+    .checklist-columns{
+        grid-template-columns: 1fr;
+    }
 }
