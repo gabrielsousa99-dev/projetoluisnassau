@@ -26,47 +26,27 @@ const themeBtn = document.getElementById("theme-toggle");
 // PAINEL DE TAREFAS
 //==============================
 
-const selectedDateText =
-document.getElementById("selected-date");
+const selectedDateText = document.getElementById("selected-date");
+const taskList = document.getElementById("task-list");
+const difficultyFilter = document.getElementById("difficulty-filter");
 
-const taskList =
-document.getElementById("task-list");
-
-const difficultyFilter =
-document.getElementById("difficulty-filter");
-
-const addButton =
-document.getElementById("add-task");
-
-const editButton =
-document.getElementById("edit-task");
-
-const deleteButton =
-document.getElementById("delete-task");
-
-const moveButton =
-document.getElementById("move-task");
+const addButton = document.getElementById("add-task");
+const editButton = document.getElementById("edit-task");
+const deleteButton = document.getElementById("delete-task");
+const moveButton = document.getElementById("move-task");
 
 //==============================
 // MODAL
 //==============================
 
-const taskModal =
-new bootstrap.Modal(
-document.getElementById("taskModal")
+const taskModal = new bootstrap.Modal(
+    document.getElementById("taskModal")
 );
 
-const titleInput =
-document.getElementById("task-title");
-
-const descriptionInput =
-document.getElementById("task-description");
-
-const difficultyInput =
-document.getElementById("task-difficulty");
-
-const saveButton =
-document.getElementById("save-task");
+const titleInput = document.getElementById("task-title");
+const descriptionInput = document.getElementById("task-description");
+const difficultyInput = document.getElementById("task-difficulty");
+const saveButton = document.getElementById("save-task");
 
 //==============================
 // DATA
@@ -78,7 +58,6 @@ let month = today.getMonth();
 let year = today.getFullYear();
 
 let selectedDate = null;
-
 let editingTask = null;
 
 //==============================
@@ -86,48 +65,46 @@ let editingTask = null;
 //==============================
 
 let tasks =
-JSON.parse(
-localStorage.getItem("tasks")
-) || [];
+    JSON.parse(localStorage.getItem("tasks")) || [];
 
-function saveTasks(){
-
-localStorage.setItem(
-"tasks",
-JSON.stringify(tasks)
-);
-
+function saveTasks() {
+    localStorage.setItem(
+        "tasks",
+        JSON.stringify(tasks)
+    );
 }
 
 //==============================
 // FORMATAR DATA
 //==============================
 
-function formatDateKey(y,m,d){
-
-return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-
+function formatDateKey(y, m, d) {
+    return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
 
 //==============================
 // MENU
 //==============================
 
-navButtons.forEach(button=>{
+navButtons.forEach(button => {
 
-button.addEventListener("click",()=>{
+    button.addEventListener("click", () => {
 
-navButtons.forEach(b=>b.classList.remove("active"));
+        navButtons.forEach(b =>
+            b.classList.remove("active")
+        );
 
-pages.forEach(p=>p.classList.remove("active"));
+        pages.forEach(p =>
+            p.classList.remove("active")
+        );
 
-button.classList.add("active");
+        button.classList.add("active");
 
-document
-.getElementById(button.dataset.page)
-.classList.add("active");
+        document
+            .getElementById(button.dataset.page)
+            .classList.add("active");
 
-});
+    });
 
 });
 
@@ -135,25 +112,23 @@ document
 // DIAS DA SEMANA
 //==============================
 
-function renderWeekDays(){
+function renderWeekDays() {
 
-const names=[
-"Dom",
-"Seg",
-"Ter",
-"Qua",
-"Qui",
-"Sex",
-"Sab"
-];
+    const names = [
+        "Dom",
+        "Seg",
+        "Ter",
+        "Qua",
+        "Qui",
+        "Sex",
+        "Sab"
+    ];
 
-daysContainer.innerHTML="";
+    daysContainer.innerHTML = "";
 
-names.forEach(day=>{
-
-daysContainer.innerHTML+=`<li>${day}</li>`;
-
-});
+    names.forEach(day => {
+        daysContainer.innerHTML += `<li>${day}</li>`;
+    });
 
 }
 
@@ -161,95 +136,62 @@ daysContainer.innerHTML+=`<li>${day}</li>`;
 // CALENDÁRIO
 //==============================
 
-function renderCalendar(){
+function renderCalendar() {
 
-header.textContent=
+    header.textContent = new Date(
+        year,
+        month
+    ).toLocaleDateString(
+        "pt-BR",
+        {
+            month: "long",
+            year: "numeric"
+        }
+    );
 
-new Date(
-year,
-month
-).toLocaleDateString(
+    const firstDay = new Date(
+        year,
+        month,
+        1
+    ).getDay();
 
-"pt-BR",
+    const lastDay = new Date(
+        year,
+        month + 1,
+        0
+    ).getDate();
 
-{
+    dates.innerHTML = "";
 
-month:"long",
-year:"numeric"
+    for (let i = 0; i < firstDay; i++) {
+        dates.innerHTML += `<li></li>`;
+    }
 
-}
+    for (let day = 1; day <= lastDay; day++) {
 
-);
+        const key = formatDateKey(
+            year,
+            month,
+            day
+        );
 
-const firstDay=
+        const total = tasks.filter(
+            t => t.date === key
+        ).length;
 
-new Date(
-year,
-month,
-1
-).getDay();
+        dates.innerHTML += `
+            <li data-date="${key}">
+                <div>${day}</div>
 
-const lastDay=
+                ${
+                    total > 0
+                        ? `<small>${total} tarefa(s)</small>`
+                        : ""
+                }
+            </li>
+        `;
 
-new Date(
-year,
-month+1,
-0
-).getDate();
-
-dates.innerHTML="";
-
-for(let i=0;i<firstDay;i++){
-
-dates.innerHTML+=`<li></li>`;
-
-}
-
-for(let day=1;day<=lastDay;day++){
-
-const key=
-
-formatDateKey(
-year,
-month,
-day
-);
-
-const total=
-
-tasks.filter(
-t=>t.date===key
-).length;
-
-dates.innerHTML+=`
-
-<li
-data-date="${key}"
->
-
-<div>
-
-${day}
-
-</div>
-
-${
-total>0
-?
-
-`<small>${total} tarefa(s)</small>`
-
-:
-
-""
-
-}
-
-</li>
-
-`;
-
-}
+    }
 
 }
 
@@ -257,73 +199,53 @@ total>0
 // MOSTRAR TAREFAS DO DIA
 //==============================
 
-function renderTasks(){
+function renderTasks() {
 
-taskList.innerHTML="";
+    taskList.innerHTML = "";
 
-if(!selectedDate){
+    if (!selectedDate) {
 
-taskList.innerHTML=
-"<li>Selecione um dia.</li>";
+        taskList.innerHTML =
+            "<li>Selecione um dia.</li>";
 
-return;
+        return;
 
-}
+    }
 
-let filtered=
+    let filtered = tasks.filter(
+        t => t.date === selectedDate
+    );
 
-tasks.filter(
+    if (difficultyFilter.value !== "all") {
 
-t=>t.date===selectedDate
+        filtered = filtered.filter(
+            t => t.difficulty === difficultyFilter.value
+        );
 
-);
+    }
 
-if(difficultyFilter.value!="all"){
+    if (filtered.length === 0) {
 
-filtered=
+        taskList.innerHTML =
+            "<li>Nenhuma tarefa.</li>";
 
-filtered.filter(
+        return;
 
-t=>t.difficulty===difficultyFilter.value
+    }
 
-);
+    filtered.forEach(task => {
 
-}
+        taskList.innerHTML += `
+            <li>
+                <strong>${task.title}</strong>
+                <br>
+                ${task.description}
+                <br>
+                ${task.difficulty}
+            </li>
+        `;
 
-if(filtered.length==0){
-
-taskList.innerHTML=
-"<li>Nenhuma tarefa.</li>";
-
-return;
-
-}
-
-filtered.forEach(task=>{
-
-taskList.innerHTML+=`
-
-<li>
-
-<strong>
-
-${task.title}
-
-</strong>
-
-<br>
-
-${task.description}
-
-<br>
-
-${task.difficulty}
-
-</li>
-
-`;
-
-});
+    });
 
 }
 
@@ -331,21 +253,20 @@ ${task.difficulty}
 // CLICAR NO DIA
 //==============================
 
-dates.addEventListener("click",e=>{
+dates.addEventListener("click", e => {
 
-const li=e.target.closest("li");
+    const li = e.target.closest("li");
 
-if(!li.dataset.date)return;
+    if (!li || !li.dataset.date) {
+        return;
+    }
 
-selectedDate=
+    selectedDate = li.dataset.date;
 
-li.dataset.date;
+    selectedDateText.textContent =
+        selectedDate;
 
-selectedDateText.textContent=
-
-selectedDate;
-
-renderTasks();
+    renderTasks();
 
 });
 
@@ -353,14 +274,14 @@ renderTasks();
 // ADICIONAR
 //==============================
 
-addButton.addEventListener("click",()=>{
+addButton.addEventListener("click", () => {
 
-editingTask=null;
+    editingTask = null;
 
-titleInput.value="";
-descriptionInput.value="";
+    titleInput.value = "";
+    descriptionInput.value = "";
 
-taskModal.show();
+    taskModal.show();
 
 });
 
@@ -368,33 +289,28 @@ taskModal.show();
 // SALVAR
 //==============================
 
-saveButton.addEventListener("click",()=>{
+saveButton.addEventListener("click", () => {
 
-if(!selectedDate)return;
+    if (!selectedDate) {
+        return;
+    }
 
-const task={
+    const task = {
+        id: Date.now(),
+        title: titleInput.value,
+        description: descriptionInput.value,
+        difficulty: difficultyInput.value,
+        date: selectedDate
+    };
 
-id:Date.now(),
+    tasks.push(task);
 
-title:titleInput.value,
+    saveTasks();
 
-description:descriptionInput.value,
+    renderCalendar();
+    renderTasks();
 
-difficulty:difficultyInput.value,
-
-date:selectedDate
-
-};
-
-tasks.push(task);
-
-saveTasks();
-
-renderCalendar();
-
-renderTasks();
-
-taskModal.hide();
+    taskModal.hide();
 
 });
 
@@ -403,46 +319,37 @@ taskModal.hide();
 //==============================
 
 difficultyFilter.addEventListener(
-
-"change",
-
-renderTasks
-
+    "change",
+    renderTasks
 );
 
 //==============================
 // MUDAR MÊS
 //==============================
 
-prevBtn.onclick=()=>{
+prevBtn.onclick = () => {
 
-month--;
+    month--;
 
-if(month<0){
+    if (month < 0) {
+        month = 11;
+        year--;
+    }
 
-month=11;
-
-year--;
-
-}
-
-renderCalendar();
+    renderCalendar();
 
 };
 
-nextBtn.onclick=()=>{
+nextBtn.onclick = () => {
 
-month++;
+    month++;
 
-if(month>11){
+    if (month > 11) {
+        month = 0;
+        year++;
+    }
 
-month=0;
-
-year++;
-
-}
-
-renderCalendar();
+    renderCalendar();
 
 };
 
@@ -450,41 +357,23 @@ renderCalendar();
 // TEMA
 //==============================
 
-const savedTheme=
+const savedTheme =
+    localStorage.getItem("theme");
 
-localStorage.getItem("theme");
-
-if(savedTheme==="dark"){
-
-document.body.classList.add(
-"dark-mode"
-);
-
+if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
 }
 
-themeBtn.onclick=()=>{
+themeBtn.onclick = () => {
 
-document.body.classList.toggle(
-"dark-mode"
-);
+    document.body.classList.toggle("dark-mode");
 
-localStorage.setItem(
-
-"theme",
-
-document.body.classList.contains(
-"dark-mode"
-)
-
-?
-
-"dark"
-
-:
-
-"light"
-
-);
+    localStorage.setItem(
+        "theme",
+        document.body.classList.contains("dark-mode")
+            ? "dark"
+            : "light"
+    );
 
 };
 
@@ -493,7 +382,5 @@ document.body.classList.contains(
 //==============================
 
 renderWeekDays();
-
 renderCalendar();
-
 renderTasks();
