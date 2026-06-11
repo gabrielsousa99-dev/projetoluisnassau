@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- CSS principal -->
+    <!-- CSS -->
     <link rel="stylesheet" href="../scss/calendar_style.css">
 </head>
 
@@ -17,128 +17,356 @@
 
     <div class="app-layout">
 
-        <!-- MENU LATERAL -->
+        <!-- MENU -->
         <aside class="sidebar">
-            <h2>Menu</h2>
 
-            <!-- Botões de navegação -->
-            <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
-            <button class="nav-btn" data-page="calendar-page">📅 Calendário</button>
-            <button class="nav-btn" data-page="checklist-page">✅ Checklist</button>
-            <button class="nav-btn" data-page="goals-page">🎯 Metas</button>
-            <button class="nav-btn" data-page="pomodoro-page">🍅 Pomodoro</button>
+            <h2>OrganizaAí</h2>
 
-            <!-- Botão do tema -->
-            <button id="theme-toggle" class="theme-btn">🌙</button>
+            <button class="nav-btn active" data-page="dashboard">
+                📊 Dashboard
+            </button>
+
+            <button class="nav-btn" data-page="calendar-page">
+                📅 Calendário
+            </button>
+
+            <button class="nav-btn" data-page="goals-page">
+                🎯 Metas
+            </button>
+
+            <button class="nav-btn" data-page="pomodoro-page">
+                🍅 Pomodoro
+            </button>
+
+            <button id="theme-toggle" class="theme-btn">
+                🌙
+            </button>
+
         </aside>
 
         <!-- CONTEÚDO -->
         <main class="content">
 
             <!-- DASHBOARD -->
+
             <section id="dashboard" class="page active">
+
                 <h1>Dashboard</h1>
-                <p>Resumo geral.</p>
+
+                <p>
+                    Aqui aparecerão o resumo das metas,
+                    tarefas do dia e sessões de Pomodoro.
+                </p>
+
             </section>
 
             <!-- CALENDÁRIO -->
+
             <section id="calendar-page" class="page">
-                <h1>Calendar</h1>
 
-                <!-- Calendário -->
-                <div class="calendar">
+                <h1>Calendário</h1>
 
-                    <header>
-                        <h3></h3>
+                <div class="calendar-layout">
 
-                        <nav>
-                            <button id="prev" aria-label="Mês anterior"></button>
-                            <button id="next" aria-label="Próximo mês"></button>
-                        </nav>
-                    </header>
+                    <!-- CALENDÁRIO -->
 
-                    <section>
-                        <ul class="days"></ul>
-                        <ul class="dates"></ul>
-                    </section>
+                    <div class="calendar">
 
-                </div>
-            </section>
+                        <header>
 
-            <!-- CHECKLIST -->
-            <section id="checklist-page" class="page">
-                <section class="checklist-section">
+                            <h3></h3>
 
-                    <h2>Checklist diária</h2>
+                            <nav>
 
-                    <div class="checklist-columns">
+                                <button
+                                    id="prev"
+                                    aria-label="Mês anterior">
+                                </button>
 
-                        <!-- Lista de todas as tarefas -->
-                        <div>
-                            <h3>Todas as tarefas</h3>
-                            <ul id="checklist-list" class="checklist-list"></ul>
-                        </div>
+                                <button
+                                    id="next"
+                                    aria-label="Próximo mês">
+                                </button>
 
-                        <!-- Tarefas do dia clicado -->
-                        <div>
-                            <h3 id="selected-day-title">Tarefas do dia</h3>
-                            <ul id="selected-day-tasks" class="selected-day-list"></ul>
-                        </div>
+                            </nav>
+
+                        </header>
+
+                        <section>
+
+                            <ul class="days"></ul>
+
+                            <ul class="dates"></ul>
+
+                        </section>
 
                     </div>
 
-                    <p class="hint">
-                        Clique em um dia no calendário para adicionar uma tarefa.
-                    </p>
+                    <!-- PAINEL DO DIA -->
 
-                </section>
+                    <aside class="task-panel">
+
+                        <h2 id="selected-date">
+
+                            Selecione um dia
+
+                        </h2>
+
+                        <hr>
+
+                        <h4>Filtrar dificuldade</h4>
+
+                        <select id="difficulty-filter" class="form-select">
+
+                            <option value="all">
+                                Todas
+                            </option>
+
+                            <option value="easy">
+                                🟢 Fácil
+                            </option>
+
+                            <option value="medium">
+                                🟡 Média
+                            </option>
+
+                            <option value="hard">
+                                🔴 Difícil
+                            </option>
+
+                        </select>
+
+                        <hr>
+
+                        <h4>Tarefas do dia</h4>
+
+                        <ul id="task-list">
+
+                            <li>
+                                Nenhuma tarefa cadastrada.
+                            </li>
+
+                        </ul>
+
+                        <div class="d-grid gap-2 mt-4">
+
+                            <button
+                                class="btn btn-success"
+                                id="add-task">
+
+                                ➕ Adicionar
+
+                            </button>
+
+                            <button
+                                class="btn btn-warning"
+                                id="edit-task">
+
+                                ✏️ Editar
+
+                            </button>
+
+                            <button
+                                class="btn btn-primary"
+                                id="move-task">
+
+                                📅 Mover
+
+                            </button>
+
+                            <button
+                                class="btn btn-danger"
+                                id="delete-task">
+
+                                🗑 Excluir
+
+                            </button>
+
+                        </div>
+
+                    </aside>
+
+                </div>
+
             </section>
 
             <!-- METAS -->
+
             <section id="goals-page" class="page">
+
                 <h1>Metas</h1>
-                <p>Área das metas.</p>
+
+                <p>
+
+                    Esta página permitirá:
+
+                </p>
+
+                <ul>
+
+                    <li>Criar metas;</li>
+
+                    <li>Editar metas;</li>
+
+                    <li>Excluir metas;</li>
+
+                    <li>Definir prazo;</li>
+
+                    <li>Acompanhar progresso;</li>
+
+                    <li>Visualizar barra de conclusão.</li>
+
+                </ul>
+
             </section>
 
             <!-- POMODORO -->
+
             <section id="pomodoro-page" class="page">
+
                 <h1>Pomodoro</h1>
-                <p>Área do timer Pomodoro.</p>
+
+                <p>
+
+                    Esta página permitirá:
+
+                </p>
+
+                <ul>
+
+                    <li>Configurar tempo de foco;</li>
+
+                    <li>Configurar pausas;</li>
+
+                    <li>Iniciar timer;</li>
+
+                    <li>Pausar;</li>
+
+                    <li>Reiniciar;</li>
+
+                    <li>Registrar sessões automaticamente.</li>
+
+                </ul>
+
             </section>
 
         </main>
+
     </div>
 
-    <!-- MODAL DO BOOTSTRAP PARA ADICIONAR TAREFA -->
-    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- MODAL -->
+
+    <div
+        class="modal fade"
+        id="taskModal"
+        tabindex="-1">
+
+        <div class="modal-dialog">
+
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Adicionar tarefa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+
+                    <h5 class="modal-title">
+
+                        Nova tarefa
+
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                    </button>
+
                 </div>
 
                 <div class="modal-body">
-                    <p id="modal-selected-date" class="mb-3"></p>
 
-                    <label for="modal-task-input" class="form-label">Tarefa</label>
-                    <input type="text" id="modal-task-input" class="form-control" placeholder="Ex: Estudar SQL">
+                    <label class="form-label">
+
+                        Título
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="task-title">
+
+                    <br>
+
+                    <label class="form-label">
+
+                        Descrição
+
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        id="task-description">
+                    </textarea>
+
+                    <br>
+
+                    <label class="form-label">
+
+                        Dificuldade
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="task-difficulty">
+
+                        <option value="easy">
+                            🟢 Fácil
+                        </option>
+
+                        <option value="medium">
+                            🟡 Média
+                        </option>
+
+                        <option value="hard">
+                            🔴 Difícil
+                        </option>
+
+                    </select>
+
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" id="modal-save-task" class="btn btn-primary">Salvar</button>
+
+                    <button
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                        Cancelar
+
+                    </button>
+
+                    <button
+                        class="btn btn-success"
+                        id="save-task">
+
+                        Salvar
+
+                    </button>
+
                 </div>
 
             </div>
+
         </div>
+
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="../js/calendar_script.js" defer></script>
+    <script src="../js/calendar_script.js"></script>
+
 </body>
 
 </html>

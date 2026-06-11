@@ -1,315 +1,499 @@
-/// ===== ELEMENTOS DO CALENDÁRIO =====
-const header = document.querySelector('.calendar h3');
-const dates = document.querySelector('.dates');
-const navs = document.querySelectorAll('#prev, #next');
-const daysContainer = document.querySelector('.days');
-
-// ===== BOTÃO DO TEMA =====
-const themeBtn = document.querySelector('#theme-toggle');
-
-// ===== ELEMENTOS DA CHECKLIST =====
-const checklistList = document.querySelector('#checklist-list');
-const selectedDayTitle = document.querySelector('#selected-day-title');
-const selectedDayTasks = document.querySelector('#selected-day-tasks');
-
-// ===== MENU LATERAL =====
-const navButtons = document.querySelectorAll('.nav-btn');
-const pages = document.querySelectorAll('.page');
-
-// ===== MODAL DO BOOTSTRAP =====
-const addTaskModalEl = document.getElementById('addTaskModal');
-const modalSelectedDate = document.getElementById('modal-selected-date');
-const modalTaskInput = document.getElementById('modal-task-input');
-const modalSaveTask = document.getElementById('modal-save-task');
-const addTaskModal = new bootstrap.Modal(addTaskModalEl);
-
-// data atual do sistema
-const today = new Date();
-
-// controle do calendário
-let date = new Date();
-let month = date.getMonth();
-let year = date.getFullYear();
-
-// dia selecionado no calendário
-let selectedDate = "";
-
-// lista de tarefas
-let checklist = JSON.parse(localStorage.getItem('checklist')) || [];
-
-// salva tarefas no localStorage
-function saveChecklist() {
-    localStorage.setItem('checklist', JSON.stringify(checklist));
-}
-
-// cria chave de data tipo: 2026-06-05
-function formatDateKey(y, m, d) {
-    const mm = String(m + 1).padStart(2, '0');
-    const dd = String(d).padStart(2, '0');
-    return `${y}-${mm}-${dd}`;
-}
-
-// transforma data em texto bonito
-function formatReadableDate(dateKey) {
-    const [y, m, d] = dateKey.split('-').map(Number);
-
-    return new Date(y, m - 1, d).toLocaleDateString(navigator.language, {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-    });
-}
-
-// limpa texto para evitar HTML estranho
-function escapeHTML(text) {
-    return text
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-}
-
-// ===== MENU =====
-navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        navButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        pages.forEach(page => page.classList.remove('active'));
-
-        const pageId = btn.dataset.page;
-        document.getElementById(pageId).classList.add('active');
-    });
-});
-
-// ===== DIAS DA SEMANA =====
-function renderWeekDays() {
-    const weekdays = [];
-    const firstSunday = new Date(2025, 0, 5);
-
-    for (let i = 0; i < 7; i++) {
-        const dayDate = new Date(firstSunday);
-        dayDate.setDate(firstSunday.getDate() + i);
-
-        weekdays.push(
-            dayDate.toLocaleDateString(navigator.language, {
-                weekday: 'short'
-            })
-        );
-    }
-
-    daysContainer.innerHTML = weekdays.map(day => `<li>${day}</li>`).join('');
-}
-
-// ===== CALENDÁRIO =====
-function renderCalendar() {
-    const start = new Date(year, month, 1).getDay();
-    const endDate = new Date(year, month + 1, 0).getDate();
-
-    let datesHtml = "";
-
-    // dias vazios antes do começo do mês
-    for (let i = start; i > 0; i--) {
-        datesHtml += `<li class="inactive"></li>`;
-    }
-
-    // dias do mês atual
-    for (let i = 1; i <= endDate; i++) {
-        const currentDateKey = formatDateKey(year, month, i);
-        const tasksOfDay = checklist.filter(t => t.date === currentDateKey);
-
-        const isToday =
-            i === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear()
-                ? ' today'
-                : '';
-
-        const isSelected = selectedDate === currentDateKey ? ' selected' : '';
-
-        datesHtml += `
-            <li class="${isToday.trim()}${isSelected}" data-date="${currentDateKey}">
-                <span class="day-number">${i}</span>
-                ${tasksOfDay.length ? `<span class="task-count">• ${tasksOfDay.length}</span>` : ''}
-            </li>
-        `;
-    }
-
-    dates.innerHTML = datesHtml;
-
-    header.textContent = new Date(year, month).toLocaleDateString(navigator.language, {
-        month: 'long',
-        year: 'numeric'
-    });
-}
-
-// ===== CHECKLIST =====
-function renderChecklist() {
-    if (!checklist.length) {
-        checklistList.innerHTML = `<li class="empty-state">Nenhuma tarefa criada ainda.</li>`;
-        return;
-    }
-
-    checklistList.innerHTML = checklist.map((task, i) => `
-        <li class="checklist-item ${task.done ? 'done' : ''}">
-            <div class="checklist-item-left">
-                <input type="checkbox" data-index="${i}" ${task.done ? "checked" : ""}>
-                <div>
-                    <div class="task-text">${escapeHTML(task.text)}</div>
-                    <div class="task-meta">${formatReadableDate(task.date)}</div>
-                </div>
-            </div>
-
-            <button class="delete-task" data-index="${i}" aria-label="Excluir tarefa">×</button>
-        </li>
-    `).join('');
-}
-
-// ===== TAREFAS DO DIA SELECIONADO =====
-function renderSelectedDayTasks() {
-    if (!selectedDate) {
-        selectedDayTitle.textContent = "Tarefas do dia";
-        selectedDayTasks.innerHTML = `<li class="empty-state">Clique em um dia do calendário.</li>`;
-        return;
-    }
-
-    const tasks = checklist.filter(t => t.date === selectedDate);
-
-    selectedDayTitle.textContent = `Tarefas do dia — ${formatReadableDate(selectedDate)}`;
-
-    selectedDayTasks.innerHTML = tasks.length
-        ? tasks.map(t => `
-            <li class="selected-task ${t.done ? 'done' : ''}">
-                <span class="task-text">${escapeHTML(t.text)}</span>
-                <span class="task-meta">${t.done ? 'Concluída' : 'Pendente'}</span>
-            </li>
-        `).join("")
-        : `<li class="empty-state">Nenhuma tarefa nesse dia.</li>`;
-}
-
-// ===== ABRIR MODAL QUANDO CLICA NO DIA =====
-function openTaskModal(dateKey) {
-    selectedDate = dateKey;
-
-    modalSelectedDate.textContent = `Dia selecionado: ${formatReadableDate(selectedDate)}`;
-    modalTaskInput.value = "";
-
-    addTaskModal.show();
-}
-
-// ===== CLIQUE NO CALENDÁRIO =====
-dates.addEventListener('click', (e) => {
-    const li = e.target.closest('li');
-
-    if (!li || !li.dataset.date) return;
-
-    selectedDate = li.dataset.date;
-
-    renderCalendar();
-    renderSelectedDayTasks();
-
-    // abre modal para adicionar a tarefa naquele dia
-    openTaskModal(selectedDate);
-});
-
-// ===== SALVAR TAREFA PELO MODAL =====
-modalSaveTask.addEventListener('click', () => {
-    const text = modalTaskInput.value.trim();
-
-    if (!text || !selectedDate) return;
-
-    checklist.push({
-        text,
-        date: selectedDate,
-        done: false
-    });
-
-    saveChecklist();
-
-    renderChecklist();
-    renderCalendar();
-    renderSelectedDayTasks();
-
-    addTaskModal.hide();
-});
-
-// ===== CHECKBOX E EXCLUSÃO =====
-checklistList.addEventListener('change', (e) => {
-    if (!e.target.matches('input[type="checkbox"]')) return;
-
-    const index = Number(e.target.dataset.index);
-    checklist[index].done = e.target.checked;
-
-    saveChecklist();
-
-    renderChecklist();
-    renderCalendar();
-    renderSelectedDayTasks();
-});
-
-checklistList.addEventListener('click', (e) => {
-    if (!e.target.matches('.delete-task')) return;
-
-    const index = Number(e.target.dataset.index);
-
-    checklist.splice(index, 1);
-    saveChecklist();
-
-    renderChecklist();
-    renderCalendar();
-    renderSelectedDayTasks();
-});
-
-// ===== NAVEGAÇÃO ENTRE MESES =====
-navs.forEach(nav => {
-    nav.addEventListener('click', e => {
-        if (e.target.id === 'prev') {
-            month--;
-
-            if (month < 0) {
-                month = 11;
-                year--;
-            }
-        } else {
-            month++;
-
-            if (month > 11) {
-                month = 0;
-                year++;
-            }
-        }
-
-        renderCalendar();
-    });
-});
-
-// ===== MODO ESCURO =====
-const savedTheme = localStorage.getItem('theme');
-
-if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-    themeBtn.textContent = "☀️";
-}
-
-themeBtn.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-
-    const isDark = document.body.classList.contains('dark-mode');
-
-    themeBtn.textContent = isDark ? "☀️" : "🌙";
-
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-});
-
-// ===== INICIALIZAÇÃO =====
-selectedDate = formatDateKey(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
+//==============================
+// ELEMENTOS DO CALENDÁRIO
+//==============================
+
+const header = document.querySelector(".calendar h3");
+const dates = document.querySelector(".dates");
+const daysContainer = document.querySelector(".days");
+
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+
+//==============================
+// MENU
+//==============================
+
+const navButtons = document.querySelectorAll(".nav-btn");
+const pages = document.querySelectorAll(".page");
+
+//==============================
+// TEMA
+//==============================
+
+const themeBtn = document.getElementById("theme-toggle");
+
+//==============================
+// PAINEL DE TAREFAS
+//==============================
+
+const selectedDateText =
+document.getElementById("selected-date");
+
+const taskList =
+document.getElementById("task-list");
+
+const difficultyFilter =
+document.getElementById("difficulty-filter");
+
+const addButton =
+document.getElementById("add-task");
+
+const editButton =
+document.getElementById("edit-task");
+
+const deleteButton =
+document.getElementById("delete-task");
+
+const moveButton =
+document.getElementById("move-task");
+
+//==============================
+// MODAL
+//==============================
+
+const taskModal =
+new bootstrap.Modal(
+document.getElementById("taskModal")
 );
 
-renderWeekDays();
+const titleInput =
+document.getElementById("task-title");
+
+const descriptionInput =
+document.getElementById("task-description");
+
+const difficultyInput =
+document.getElementById("task-difficulty");
+
+const saveButton =
+document.getElementById("save-task");
+
+//==============================
+// DATA
+//==============================
+
+const today = new Date();
+
+let month = today.getMonth();
+let year = today.getFullYear();
+
+let selectedDate = null;
+
+let editingTask = null;
+
+//==============================
+// LOCAL STORAGE
+//==============================
+
+let tasks =
+JSON.parse(
+localStorage.getItem("tasks")
+) || [];
+
+function saveTasks(){
+
+localStorage.setItem(
+"tasks",
+JSON.stringify(tasks)
+);
+
+}
+
+//==============================
+// FORMATAR DATA
+//==============================
+
+function formatDateKey(y,m,d){
+
+return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+
+}
+
+//==============================
+// MENU
+//==============================
+
+navButtons.forEach(button=>{
+
+button.addEventListener("click",()=>{
+
+navButtons.forEach(b=>b.classList.remove("active"));
+
+pages.forEach(p=>p.classList.remove("active"));
+
+button.classList.add("active");
+
+document
+.getElementById(button.dataset.page)
+.classList.add("active");
+
+});
+
+});
+
+//==============================
+// DIAS DA SEMANA
+//==============================
+
+function renderWeekDays(){
+
+const names=[
+"Dom",
+"Seg",
+"Ter",
+"Qua",
+"Qui",
+"Sex",
+"Sab"
+];
+
+daysContainer.innerHTML="";
+
+names.forEach(day=>{
+
+daysContainer.innerHTML+=`<li>${day}</li>`;
+
+});
+
+}
+
+//==============================
+// CALENDÁRIO
+//==============================
+
+function renderCalendar(){
+
+header.textContent=
+
+new Date(
+year,
+month
+).toLocaleDateString(
+
+"pt-BR",
+
+{
+
+month:"long",
+year:"numeric"
+
+}
+
+);
+
+const firstDay=
+
+new Date(
+year,
+month,
+1
+).getDay();
+
+const lastDay=
+
+new Date(
+year,
+month+1,
+0
+).getDate();
+
+dates.innerHTML="";
+
+for(let i=0;i<firstDay;i++){
+
+dates.innerHTML+=`<li></li>`;
+
+}
+
+for(let day=1;day<=lastDay;day++){
+
+const key=
+
+formatDateKey(
+year,
+month,
+day
+);
+
+const total=
+
+tasks.filter(
+t=>t.date===key
+).length;
+
+dates.innerHTML+=`
+
+<li
+data-date="${key}"
+>
+
+<div>
+
+${day}
+
+</div>
+
+${
+total>0
+?
+
+`<small>${total} tarefa(s)</small>`
+
+:
+
+""
+
+}
+
+</li>
+
+`;
+
+}
+
+}
+
+//==============================
+// MOSTRAR TAREFAS DO DIA
+//==============================
+
+function renderTasks(){
+
+taskList.innerHTML="";
+
+if(!selectedDate){
+
+taskList.innerHTML=
+"<li>Selecione um dia.</li>";
+
+return;
+
+}
+
+let filtered=
+
+tasks.filter(
+
+t=>t.date===selectedDate
+
+);
+
+if(difficultyFilter.value!="all"){
+
+filtered=
+
+filtered.filter(
+
+t=>t.difficulty===difficultyFilter.value
+
+);
+
+}
+
+if(filtered.length==0){
+
+taskList.innerHTML=
+"<li>Nenhuma tarefa.</li>";
+
+return;
+
+}
+
+filtered.forEach(task=>{
+
+taskList.innerHTML+=`
+
+<li>
+
+<strong>
+
+${task.title}
+
+</strong>
+
+<br>
+
+${task.description}
+
+<br>
+
+${task.difficulty}
+
+</li>
+
+`;
+
+});
+
+}
+
+//==============================
+// CLICAR NO DIA
+//==============================
+
+dates.addEventListener("click",e=>{
+
+const li=e.target.closest("li");
+
+if(!li.dataset.date)return;
+
+selectedDate=
+
+li.dataset.date;
+
+selectedDateText.textContent=
+
+selectedDate;
+
+renderTasks();
+
+});
+
+//==============================
+// ADICIONAR
+//==============================
+
+addButton.addEventListener("click",()=>{
+
+editingTask=null;
+
+titleInput.value="";
+descriptionInput.value="";
+
+taskModal.show();
+
+});
+
+//==============================
+// SALVAR
+//==============================
+
+saveButton.addEventListener("click",()=>{
+
+if(!selectedDate)return;
+
+const task={
+
+id:Date.now(),
+
+title:titleInput.value,
+
+description:descriptionInput.value,
+
+difficulty:difficultyInput.value,
+
+date:selectedDate
+
+};
+
+tasks.push(task);
+
+saveTasks();
+
 renderCalendar();
-renderChecklist();
-renderSelectedDayTasks();
+
+renderTasks();
+
+taskModal.hide();
+
+});
+
+//==============================
+// FILTRO
+//==============================
+
+difficultyFilter.addEventListener(
+
+"change",
+
+renderTasks
+
+);
+
+//==============================
+// MUDAR MÊS
+//==============================
+
+prevBtn.onclick=()=>{
+
+month--;
+
+if(month<0){
+
+month=11;
+
+year--;
+
+}
+
+renderCalendar();
+
+};
+
+nextBtn.onclick=()=>{
+
+month++;
+
+if(month>11){
+
+month=0;
+
+year++;
+
+}
+
+renderCalendar();
+
+};
+
+//==============================
+// TEMA
+//==============================
+
+const savedTheme=
+
+localStorage.getItem("theme");
+
+if(savedTheme==="dark"){
+
+document.body.classList.add(
+"dark-mode"
+);
+
+}
+
+themeBtn.onclick=()=>{
+
+document.body.classList.toggle(
+"dark-mode"
+);
+
+localStorage.setItem(
+
+"theme",
+
+document.body.classList.contains(
+"dark-mode"
+)
+
+?
+
+"dark"
+
+:
+
+"light"
+
+);
+
+};
+
+//==============================
+// INICIALIZAÇÃO
+//==============================
+
+renderWeekDays();
+
+renderCalendar();
+
+renderTasks();
