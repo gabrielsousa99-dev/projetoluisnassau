@@ -70,7 +70,7 @@ function escapeHTML(text) {
         .replaceAll("'", '&#039;');
 }
 
-// ===== NAVEGAÇÃO DO MENU =====
+// ===== MENU =====
 navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         navButtons.forEach(b => b.classList.remove('active'));
